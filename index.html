@@ -70,6 +70,85 @@
     transition: color 0.3s;
   }
   .nav-links a:hover { color: var(--gold); }
+  .nav-trading {
+    color: var(--gold) !important;
+    border: 1px solid var(--gold-dim);
+    padding: 0.35rem 0.85rem;
+    transition: background 0.3s !important;
+  }
+  .nav-trading:hover { background: rgba(201,168,76,0.1); }
+
+  /* Trading feature banner */
+  .trading-banner {
+    background:
+      linear-gradient(135deg, rgba(201,168,76,0.08) 0%, transparent 50%),
+      linear-gradient(to right, #0d0d15, #111118);
+    border-top: 1px solid var(--gold-dim);
+    border-bottom: 1px solid var(--gold-dim);
+    position: relative;
+    overflow: hidden;
+    transition: background 0.4s;
+  }
+  .trading-banner::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 50% 100% at 85% 50%, rgba(74,154,106,0.08), transparent 70%);
+    pointer-events: none;
+  }
+  .trading-banner:hover { background:
+      linear-gradient(135deg, rgba(201,168,76,0.14) 0%, transparent 50%),
+      linear-gradient(to right, #10101a, #14141d);
+  }
+  .trading-banner-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 3rem 4rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 3rem;
+    position: relative;
+    z-index: 1;
+  }
+  .trading-banner-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1rem;
+  }
+  .trading-banner-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(1.8rem, 3vw, 2.8rem);
+    font-weight: 300;
+    color: var(--cream);
+    line-height: 1.1;
+    margin-bottom: 1rem;
+  }
+  .trading-banner-title em { font-style: italic; color: var(--gold); }
+  .trading-banner-desc {
+    color: var(--muted);
+    font-size: 0.95rem;
+    max-width: 620px;
+  }
+  .trading-banner-cta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    border: 1px solid var(--gold-dim);
+    padding: 1rem 2rem;
+    transition: gap 0.3s;
+  }
+  .trading-banner:hover .trading-banner-cta { gap: 1.25rem; }
+  .trading-banner-cta span { font-size: 1.2rem; }
 
   /* Hero */
   #hero {
@@ -661,6 +740,7 @@
   @media (max-width: 900px) {
     nav { padding: 1.2rem 2rem; }
     .nav-links { display: none; }
+    .trading-banner-inner { flex-direction: column; align-items: flex-start; padding: 2.5rem 2rem; gap: 2rem; }
     #hero { grid-template-columns: 1fr; padding: 7rem 2rem 3rem; }
     .hero-portrait { display: none; }
     .section-wrap { padding: 5rem 2rem; }
@@ -695,6 +775,7 @@
     <li><a href="#career">Career</a></li>
     <li><a href="#education">Education</a></li>
     <li><a href="#research">Research</a></li>
+    <li><a href="trading.html" class="nav-trading">Trading ↗</a></li>
     <li><a href="#personal">Personal</a></li>
     <li><a href="#contact">Contact</a></li>
   </ul>
@@ -751,6 +832,22 @@
     </div>
   </div>
 </div>
+
+<!-- Trading Feature Banner -->
+<a href="trading.html" style="text-decoration:none;display:block;">
+<div class="trading-banner">
+  <div class="trading-banner-inner">
+    <div class="trading-banner-left">
+      <div class="trading-banner-label">Featured · Quantitative Trading</div>
+      <div class="trading-banner-title">Trading Ideas &amp; <em>Live Track Record</em></div>
+      <div class="trading-banner-desc">Open-source quantitative trading strategies, statistical arbitrage research, and a verified, fully transparent investment track record — followable live on eToro.</div>
+    </div>
+    <div class="trading-banner-cta">
+      Explore <span>→</span>
+    </div>
+  </div>
+</div>
+</a>
 
 <hr class="divider">
 
@@ -878,11 +975,11 @@
       <div class="research-title">Long/Short Trading Strategy Design & Backtesting</div>
       <div class="research-desc">CQF final project. Cointegration-based pairs trading strategy applied to volatility ETF/ETN instruments. Covers mean-reversion theory, stationarity testing, signal generation, and rigorous backtesting with performance evaluation and arbitrage caveats.</div>
     </div>
-    <div class="research-card" style="border-color: var(--gold-dim); background: rgba(201,168,76,0.03);">
-      <div class="research-tag">Quantitative Code · Open Source</div>
-      <div class="research-title">Trading Ideas — Python Repository</div>
-      <div class="research-desc">Open-source collection of quantitative trading strategies in Python, including pairs trading implementations, factor models, and backtesting frameworks. Available on GitHub.</div>
-      <a href="trading.html" style="display:inline-block;margin-top:1rem;font-family:'JetBrains Mono',monospace;font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--gold);text-decoration:none;border-bottom:1px solid var(--gold-dim);padding-bottom:2px;">View Trading Code →</a>
+    <div class="research-card" style="border-color: var(--gold-dim); background: rgba(201,168,76,0.05);">
+      <div class="research-tag" style="color: var(--gold);">★ Featured · Open Source Code & Live Performance</div>
+      <div class="research-title">Trading Ideas — Strategies, Code & Track Record</div>
+      <div class="research-desc">Open-source quantitative trading strategies in Python — pairs trading, statistical arbitrage, regime detection, and factor models — alongside a verified, fully transparent multi-year investment track record on eToro.</div>
+      <a href="trading.html" style="display:inline-block;margin-top:1rem;font-family:'JetBrains Mono',monospace;font-size:0.7rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--gold);text-decoration:none;border:1px solid var(--gold-dim);padding:0.6rem 1.2rem;">Open Trading Page →</a>
     </div>
   </div>
   <div style="text-align:center;margin-top:3rem;" class="reveal">
@@ -892,6 +989,7 @@
     </a>
   </div>
 </div>
+
 <div class="section-wrap" id="skills">
   <div class="section-label">Expertise</div>
   <h2 class="section-title">Technical<br><em>Skills</em></h2>
