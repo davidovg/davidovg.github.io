@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Boyan Davidov — Quant PM · Researcher · Fencer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --border: #1e1e2e;
+    --gold: #c9a84c;
+    --gold-dim: #8a6f30;
+    --cream: #f0ead6;
+    --muted: #5a5a6e;
+    --text: #d4cfc4;
+    --accent: #4a7fa5;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Libre Baskerville', serif;
+    font-size: 16px;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 999;
+    opacity: 0.4;
+  }
+
+  /* Nav */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 4rem;
+    background: linear-gradient(to bottom, rgba(10,10,15,0.95), transparent);
+    backdrop-filter: blur(4px);
+  }
+  .nav-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+    font-weight: 300;
+    letter-spacing: 0.3em;
+    color: var(--gold);
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+  .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+  .nav-links a {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+  .nav-links a:hover { color: var(--gold); }
+
+  /* Hero */
+  #hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    padding: 8rem 4rem 4rem;
+    position: relative;
+    overflow: hidden;
+    gap: 4rem;
+  }
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background: 
+      radial-gradient(ellipse 60% 50% at 80% 50%, rgba(74,127,165,0.07) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 60% at 20% 80%, rgba(201,168,76,0.04) 0%, transparent 60%);
+  }
+  .hero-left { position: relative; z-index: 1; }
+  .hero-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 2rem;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.2s forwards;
+  }
+  .hero-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(3.5rem, 7vw, 8rem);
+    font-weight: 300;
+    line-height: 0.9;
+    color: var(--cream);
+    letter-spacing: -0.02em;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.4s forwards;
+  }
+  .hero-name em { font-style: italic; color: var(--gold); }
+  .hero-credentials {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 2.5rem;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.6s forwards;
+  }
+  .cred-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    padding: 0.3rem 0.75rem;
+    border: 1px solid var(--gold-dim);
+    color: var(--gold);
+    text-transform: uppercase;
+  }
+  .hero-quote {
+    margin-top: 3rem;
+    max-width: 520px;
+    font-style: italic;
+    font-size: 0.95rem;
+    color: var(--muted);
+    border-left: 2px solid var(--gold-dim);
+    padding-left: 1.5rem;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.8s forwards;
+  }
+  .hero-quote cite {
+    display: block;
+    margin-top: 0.5rem;
+    font-style: normal;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.15em;
+    color: var(--gold-dim);
+    text-transform: uppercase;
+  }
+  /* Hero portrait */
+  .hero-portrait {
+    position: relative;
+    z-index: 1;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.5s forwards;
+  }
+  .hero-portrait img {
+    width: 100%;
+    max-width: 420px;
+    height: 560px;
+    object-fit: cover;
+    object-position: top center;
+    display: block;
+    filter: grayscale(20%) contrast(1.05);
+  }
+  .hero-portrait::before {
+    content: '';
+    position: absolute;
+    top: -12px; left: -12px;
+    right: 12px; bottom: 12px;
+    border: 1px solid var(--gold-dim);
+    z-index: -1;
+  }
+  .hero-portrait::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, transparent 60%, rgba(10,10,15,0.8));
+  }
+
+  /* Sections */
+  .section-wrap {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 7rem 4rem;
+  }
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    max-width: 80px;
+    height: 1px;
+    background: var(--gold-dim);
+  }
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.5rem, 4vw, 4rem);
+    font-weight: 300;
+    color: var(--cream);
+    line-height: 1.1;
+    margin-bottom: 3rem;
+  }
+  .section-title em { font-style: italic; color: var(--gold); }
+
+  /* About */
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6rem;
+    align-items: start;
+  }
+  .about-text p { color: var(--text); margin-bottom: 1.5rem; font-size: 1.05rem; }
+  .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 2rem; }
+  .stat-item {
+    border: 1px solid var(--border);
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s;
+  }
+  .stat-item::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 2px; height: 100%;
+    background: var(--gold);
+    transform: scaleY(0);
+    transform-origin: bottom;
+    transition: transform 0.3s;
+  }
+  .stat-item:hover::before { transform: scaleY(1); }
+  .stat-item:hover { border-color: var(--gold-dim); }
+  .stat-number {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.5rem;
+    font-weight: 300;
+    color: var(--gold);
+    line-height: 1;
+  }
+  .stat-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 0.5rem;
+  }
+
+  /* Photo gallery */
+  .photo-gallery {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+  .photo-item {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 3/4;
+    cursor: pointer;
+  }
+  .photo-item.wide {
+    grid-column: span 2;
+    aspect-ratio: 16/9;
+  }
+  .photo-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+    filter: grayscale(20%);
+    transition: transform 0.6s, filter 0.4s;
+  }
+  .photo-item:hover img {
+    transform: scale(1.05);
+    filter: grayscale(0%);
+  }
+  .photo-caption {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    padding: 1rem;
+    background: linear-gradient(transparent, rgba(10,10,15,0.9));
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold);
+    transform: translateY(100%);
+    transition: transform 0.3s;
+  }
+  .photo-item:hover .photo-caption { transform: translateY(0); }
+
+  /* Career timeline */
+  .timeline { position: relative; padding-left: 2rem; }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 1px;
+    background: linear-gradient(to bottom, var(--gold), transparent);
+  }
+  .timeline-item {
+    position: relative;
+    padding: 0 0 3.5rem 3rem;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 2rem;
+    align-items: start;
+    opacity: 0;
+    transform: translateX(-20px);
+    transition: opacity 0.6s, transform 0.6s;
+  }
+  .timeline-item.visible { opacity: 1; transform: translateX(0); }
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -0.35rem; top: 0.5rem;
+    width: 0.7rem; height: 0.7rem;
+    background: var(--gold);
+    border-radius: 50%;
+    box-shadow: 0 0 12px rgba(201,168,76,0.4);
+  }
+  .timeline-content {}
+  .timeline-period {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    color: var(--gold-dim);
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+  .timeline-role {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.6rem;
+    font-weight: 400;
+    color: var(--cream);
+    line-height: 1.2;
+  }
+  .timeline-company {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.15em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin: 0.4rem 0 1rem;
+  }
+  .timeline-desc { color: var(--muted); font-size: 0.95rem; max-width: 600px; }
+  .timeline-photo {
+    width: 160px;
+    height: 110px;
+    object-fit: cover;
+    opacity: 0.7;
+    filter: grayscale(30%);
+    transition: opacity 0.3s, filter 0.3s;
+    flex-shrink: 0;
+  }
+  .timeline-item:hover .timeline-photo { opacity: 1; filter: grayscale(0%); }
+
+  /* Education */
+  .edu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+  .edu-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s, transform 0.3s;
+  }
+  .edu-card:hover { border-color: var(--gold-dim); transform: translateY(-4px); }
+  .edu-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(to right, var(--gold), transparent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s;
+  }
+  .edu-card:hover::after { transform: scaleX(1); }
+  .edu-institution { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; color: var(--cream); margin-bottom: 0.4rem; }
+  .edu-degree { font-size: 0.9rem; color: var(--text); margin-bottom: 0.4rem; }
+  .edu-period { font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; letter-spacing: 0.15em; color: var(--muted); text-transform: uppercase; }
+  .edu-award {
+    display: inline-block;
+    margin-top: 0.8rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    padding: 0.25rem 0.6rem;
+    background: rgba(201,168,76,0.1);
+    border: 1px solid var(--gold-dim);
+    color: var(--gold);
+    text-transform: uppercase;
+  }
+
+  /* CFA photo */
+  .cfa-moment {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: center;
+    margin-top: 3rem;
+  }
+  .cfa-moment img {
+    width: 100%;
+    height: 320px;
+    object-fit: cover;
+    object-position: center top;
+    filter: grayscale(20%);
+    transition: filter 0.4s;
+  }
+  .cfa-moment img:hover { filter: grayscale(0%); }
+  .cfa-moment-text {}
+  .cfa-moment-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem;
+    color: var(--cream);
+    margin-bottom: 1rem;
+    font-style: italic;
+  }
+  .cfa-moment-desc { color: var(--muted); font-size: 0.95rem; }
+
+  /* Research */
+  .research-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+  .research-card { border: 1px solid var(--border); padding: 2rem; transition: border-color 0.3s; }
+  .research-card:hover { border-color: var(--gold-dim); }
+  .research-tag { font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 1rem; }
+  .research-title { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; color: var(--cream); margin-bottom: 0.8rem; line-height: 1.3; }
+  .research-desc { font-size: 0.88rem; color: var(--muted); }
+
+  /* Skills */
+  .skills-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3rem; }
+  .skill-group-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .skill-list { list-style: none; display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .skill-list li {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    padding: 0.3rem 0.7rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .skill-list li:hover { border-color: var(--gold-dim); color: var(--gold); }
+
+  /* Languages */
+  .lang-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; }
+  .lang-item { padding: 1.5rem; border: 1px solid var(--border); text-align: center; transition: border-color 0.3s, transform 0.3s; }
+  .lang-item:hover { border-color: var(--gold-dim); transform: translateY(-3px); }
+  .lang-name { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; color: var(--cream); }
+  .lang-level { font-family: 'JetBrains Mono', monospace; font-size: 0.58rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-top: 0.4rem; }
+  .lang-dots { display: flex; justify-content: center; gap: 4px; margin-top: 0.8rem; }
+  .lang-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--border); }
+  .lang-dot.filled { background: var(--gold); }
+
+  /* Personal */
+  .personal-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+  .personal-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    overflow: hidden;
+    transition: transform 0.3s, border-color 0.3s;
+    position: relative;
+  }
+  .personal-card:hover { transform: translateY(-6px); border-color: var(--gold-dim); }
+  .personal-card-img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    object-position: center top;
+    filter: grayscale(30%);
+    transition: filter 0.4s, transform 0.4s;
+  }
+  .personal-card:hover .personal-card-img { filter: grayscale(0%); transform: scale(1.03); }
+  .personal-card-body { padding: 1.5rem; }
+  .personal-icon { font-size: 1.8rem; margin-bottom: 0.75rem; }
+  .personal-title { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; color: var(--cream); margin-bottom: 0.6rem; }
+  .personal-desc { font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
+
+  /* Location */
+  .location-bar {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 3rem 4rem;
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .location-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .location-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--gold);
+    box-shadow: 0 0 8px rgba(201,168,76,0.6);
+    animation: pulse 2s infinite;
+  }
+
+  /* Contact */
+  .contact-wrap { max-width: 1200px; margin: 0 auto; padding: 0 4rem 10rem; text-align: center; }
+  .contact-email {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(1.8rem, 3vw, 3rem);
+    font-weight: 300;
+    color: var(--cream);
+    text-decoration: none;
+    display: inline-block;
+    position: relative;
+    padding-bottom: 0.2rem;
+  }
+  .contact-email::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 1px;
+    background: var(--gold);
+    transform: scaleX(0);
+    transition: transform 0.4s;
+  }
+  .contact-email:hover::after { transform: scaleX(1); }
+
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 2rem 4rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  footer span {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .divider { max-width: 1200px; margin: 0 auto; padding: 0 4rem; border: none; border-top: 1px solid var(--border); }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 8px rgba(201,168,76,0.6); }
+    50% { box-shadow: 0 0 16px rgba(201,168,76,0.9); }
+  }
+  .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.7s, transform 0.7s; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 900px) {
+    nav { padding: 1.2rem 2rem; }
+    .nav-links { display: none; }
+    #hero { grid-template-columns: 1fr; padding: 7rem 2rem 3rem; }
+    .hero-portrait { display: none; }
+    .section-wrap { padding: 5rem 2rem; }
+    .about-grid { grid-template-columns: 1fr; gap: 3rem; }
+    .skills-container, .personal-grid { grid-template-columns: 1fr 1fr; }
+    .research-grid { grid-template-columns: 1fr; }
+    .cfa-moment { grid-template-columns: 1fr; }
+    .photo-gallery { grid-template-columns: 1fr 1fr; }
+    .photo-item.wide { grid-column: span 2; }
+    .location-bar { padding: 2rem; }
+    footer { padding: 2rem; flex-direction: column; gap: 1rem; text-align: center; }
+    .timeline-item { grid-template-columns: 1fr; }
+    .timeline-photo { width: 100%; height: 160px; }
+    .contact-wrap { padding: 0 2rem 6rem; }
+  }
+  @media (max-width: 600px) {
+    .skills-container, .personal-grid { grid-template-columns: 1fr; }
+    .stats-grid { grid-template-columns: 1fr 1fr; }
+    .photo-gallery { grid-template-columns: 1fr; }
+    .photo-item.wide { grid-column: span 1; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="#hero">B. Davidov</a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#career">Career</a></li>
+    <li><a href="#education">Education</a></li>
+    <li><a href="#research">Research</a></li>
+    <li><a href="#personal">Personal</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- Hero -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-left">
+    <div class="hero-eyebrow">Quantitative Finance · Research · Frankfurt am Main</div>
+    <h1 class="hero-name">Boyan<br><em>Davidov</em></h1>
+    <div class="hero-credentials">
+      <span class="cred-badge">CFA</span>
+      <span class="cred-badge">FRM</span>
+      <span class="cred-badge">CAIA</span>
+      <span class="cred-badge">CMT</span>
+      <span class="cred-badge">CQF</span>
+      <span class="cred-badge">PhD Candidate</span>
+      <span class="cred-badge">Pictet Prize</span>
+    </div>
+    <blockquote class="hero-quote">
+      Il faut toujours viser la lune, car même en cas d'échec, on atterrit dans les étoiles.
+      <cite>— Oscar Wilde</cite>
+    </blockquote>
+  </div>
+  <div class="hero-portrait">
+    <img src="bobi.jpg" alt="Boyan Davidov">
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- About -->
+<div class="section-wrap" id="about">
+  <div class="about-grid">
+    <div class="about-text">
+      <div class="section-label">About</div>
+      <h2 class="section-title">Quant PM.<br><em>Researcher.</em><br>Polymath.</h2>
+      <p>Senior quantitative finance professional with over a decade of experience across multi-asset portfolio management, risk modelling, proprietary trading, and algorithmic strategy development. Based in Frankfurt, with a career spanning Vienna, Monaco, Paris, and Luxembourg.</p>
+      <p>Holder of five professional designations — CFA, FRM, CAIA, CMT, and CQF — alongside three master's degrees and an active PhD candidacy in Data Science. Academic researcher and co-author of peer-reviewed work in commodity markets and digital assets.</p>
+      <p>Equally at home in a Bloomberg terminal, a research paper, or on the fencing piste.</p>
+    </div>
+    <div>
+      <div class="stats-grid reveal">
+        <div class="stat-item"><div class="stat-number">5</div><div class="stat-label">Professional Designations</div></div>
+        <div class="stat-item"><div class="stat-number">3</div><div class="stat-label">Master's Degrees</div></div>
+        <div class="stat-item"><div class="stat-number">7</div><div class="stat-label">Languages</div></div>
+        <div class="stat-item"><div class="stat-number">12+</div><div class="stat-label">Years in Finance</div></div>
+        <div class="stat-item"><div class="stat-number">5</div><div class="stat-label">Countries Worked In</div></div>
+        <div class="stat-item"><div class="stat-number">2</div><div class="stat-label">Papers In Progress</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Photo gallery -->
+  <div class="photo-gallery reveal" style="margin-top: 4rem;">
+    <div class="photo-item wide">
+      <img src="fencing_training.jpg" alt="Fencing training in Freiburg">
+      <div class="photo-caption">Training · Freiburg</div>
+    </div>
+    <div class="photo-item">
+      <img src="monaco.jpg" alt="Monte Carlo, Monaco" style="object-position: center center;">
+      <div class="photo-caption">Monte Carlo · Monaco</div>
+    </div>
+    <div class="photo-item">
+      <img src="fencing_competition.png" alt="Competition · DAVIDOV BUL">
+      <div class="photo-caption">Competition · BUL</div>
+    </div>
+    <div class="photo-item">
+      <img src="shooting.jpg" alt="Modern Pentathlon — Shooting" style="object-position: center center;">
+      <div class="photo-caption">Pentathlon · Shooting</div>
+    </div>
+    <div class="photo-item">
+      <img src="motorcycle.jpg" alt="Honda CBR" style="object-position: center center;">
+      <div class="photo-caption">Honda CBR</div>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- Career -->
+<div class="section-wrap" id="career">
+  <div class="section-label">Career</div>
+  <h2 class="section-title">Professional<br><em>Experience</em></h2>
+  <div class="timeline">
+
+    <div class="timeline-item">
+      <div class="timeline-content">
+        <div class="timeline-period">Jan 2024 — Present</div>
+        <div class="timeline-role">Portfolio Manager</div>
+        <div class="timeline-company">Commerzbank AG · Frankfurt</div>
+        <div class="timeline-desc">Multi-Asset Solutions — research on factor investing, commodity ETC/ETFs, process automation and execution. Development of quantitative reporting infrastructure and benchmark analysis frameworks.</div>
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="timeline-content">
+        <div class="timeline-period">Jun 2021 — May 2023</div>
+        <div class="timeline-role">Risk Manager & Quant Analyst</div>
+        <div class="timeline-company">GFG Group · Monaco</div>
+        <div class="timeline-desc">Monitored fund positioning, built risk models and processes, developed quantitative strategies and research for the asset management division. Multi-asset mandate with global scope.</div>
+      </div>
+      <img src="monaco.jpg" alt="Monaco" class="timeline-photo" style="object-position: center center;">
+    </div>
+
+    <div class="timeline-item">
+      <div class="timeline-content">
+        <div class="timeline-period">May 2020 — May 2021</div>
+        <div class="timeline-role">Financial Operator</div>
+        <div class="timeline-company">ABC Arbitrage · Paris</div>
+        <div class="timeline-desc">ADR conversions, stock loan negotiation for short selling, automation of tasks with VBA and C#. Exposure to arbitrage strategies across European equity markets.</div>
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="timeline-content">
+        <div class="timeline-period">Jan 2018 — Aug 2018</div>
+        <div class="timeline-role">Proprietary Equity Trader & Market Maker</div>
+        <div class="timeline-company">Erste Group AG · Vienna</div>
+        <div class="timeline-desc">Implemented trading applications and systematic strategies using C++ and Lua. EUREX certified derivatives trader, XETRA exchange-admitted trader.</div>
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="timeline-content">
+        <div class="timeline-period">Oct 2016 — Dec 2017</div>
+        <div class="timeline-role">Finance & Risk Analyst</div>
+        <div class="timeline-company">Accenture GmbH · Vienna</div>
+        <div class="timeline-desc">Delivered the first two RPA projects for Accenture Austria using NICE Software. Finance & Risk Services division.</div>
+      </div>
+    </div>
+
+    <div class="timeline-item">
+      <div class="timeline-content">
+        <div class="timeline-period">Sep 2012 — Sep 2015</div>
+        <div class="timeline-role">Risk Manager — Capital Markets</div>
+        <div class="timeline-company">Erste Group AG · Vienna</div>
+        <div class="timeline-desc">Market data analysis for equity and IR derivatives. Implemented SABR/SVI model in VBA and R. Managed volatility surfaces; Calypso, Kondor, and Asset Control.</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- Education -->
+<div class="section-wrap" id="education">
+  <div class="section-label">Education</div>
+  <h2 class="section-title">Academic<br><em>Formation</em></h2>
+  <div class="edu-grid reveal">
+    <div class="edu-card">
+      <div class="edu-institution">Sofia University</div>
+      <div class="edu-degree">PhD Candidate in Data Science (Part-time)</div>
+      <div class="edu-period">Jun 2022 — Present · Sofia</div>
+    </div>
+    <div class="edu-card">
+      <div class="edu-institution">Université de Luxembourg</div>
+      <div class="edu-degree">Master in Wealth Management & Private Banking</div>
+      <div class="edu-period">Sep 2018 — Mar 2020 · Luxembourg</div>
+      <span class="edu-award">🏆 Pictet Prize — Best Student in Cohort</span>
+    </div>
+    <div class="edu-card">
+      <div class="edu-institution">WU Vienna</div>
+      <div class="edu-degree">MSc Quantitative Finance</div>
+      <div class="edu-period">Sep 2010 — Mar 2013 · Vienna</div>
+    </div>
+    <div class="edu-card">
+      <div class="edu-institution">UNWE Sofia</div>
+      <div class="edu-degree">BA Finance</div>
+      <div class="edu-period">Sep 2006 — Jun 2010 · Sofia</div>
+    </div>
+  </div>
+
+  <!-- CFA moment -->
+  <div class="cfa-moment reveal">
+    <img src="cfa_designation.jpg" alt="CFA Designation Ceremony">
+    <div class="cfa-moment-text">
+      <div class="section-label">Achievement</div>
+      <div class="cfa-moment-title">CFA Charterholder<br>Designation Ceremony</div>
+      <div class="cfa-moment-desc">Receiving the CFA designation — one of five professional credentials earned alongside an active research career and academic affiliations across four countries. The CFA, FRM, CAIA, CMT, and CQF represent a comprehensive coverage of quantitative finance, risk management, alternative investments, technical analysis, and mathematical modelling.</div>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- Research -->
+<div class="section-wrap" id="research">
+  <div class="section-label">Research</div>
+  <h2 class="section-title">Academic<br><em>Work</em></h2>
+  <div class="research-grid reveal">
+    <div class="research-card">
+      <div class="research-tag">Commodity Markets · In Review</div>
+      <div class="research-title">Brent Crude Oil Dynamics: Regime Detection and Correlation Breakdown</div>
+      <div class="research-desc">Co-authored with Nikolay Netov (Sofia University). Full pipeline: STL decomposition, ARIMA/GARCH modelling, HMM regime detection, correlation analysis. Key finding: breakdown of Brent-DXY negative correlation during crisis periods. Targeting SERBE journal.</div>
+    </div>
+    <div class="research-card">
+      <div class="research-tag">Digital Assets · Working Paper</div>
+      <div class="research-title">Bitcoin as Return Sleeve, Not Diversifier</div>
+      <div class="research-desc">Co-authored with Demir Bektić and Piotr Kitowski. Extended sample to n=112 months, integrated recent crypto microstructure literature, added behavioral finance subsection, applied data-mining corrections. Challenges the conventional Bitcoin diversification narrative.</div>
+    </div>
+    <div class="research-card">
+      <div class="research-tag">Interest Rates · Industry Research</div>
+      <div class="research-title">Understanding Bond Risk Premia</div>
+      <div class="research-desc">Industry lab research at Spängler IQAM Invest, Vienna. Investigated term structure dynamics and excess return predictability in fixed income markets.</div>
+    </div>
+    <div class="research-card">
+      <div class="research-tag">Equity · Industry Research</div>
+      <div class="research-title">Earnings Quality Measures and Excess Returns</div>
+      <div class="research-desc">Investigated the relationship between earnings quality metrics and subsequent excess equity returns. Research conducted during industry lab placement at Spängler IQAM Invest.</div>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- Skills -->
+<div class="section-wrap" id="skills">
+  <div class="section-label">Expertise</div>
+  <h2 class="section-title">Technical<br><em>Skills</em></h2>
+  <div class="skills-container reveal">
+    <div>
+      <div class="skill-group-title">Statistical & Scientific</div>
+      <ul class="skill-list">
+        <li>Python</li><li>R</li><li>MATLAB</li><li>EViews</li>
+        <li>ARIMA/GARCH</li><li>HMM</li><li>Factor Models</li>
+        <li>STL Decomposition</li><li>Conformal Prediction</li>
+      </ul>
+    </div>
+    <div>
+      <div class="skill-group-title">Programming</div>
+      <ul class="skill-list">
+        <li>C++</li><li>C#</li><li>SQL</li><li>JavaScript</li>
+        <li>VBA</li><li>Borland Pascal</li><li>LaTeX</li>
+        <li>NICE RPA</li><li>BluePrism</li>
+      </ul>
+    </div>
+    <div>
+      <div class="skill-group-title">Finance Systems</div>
+      <ul class="skill-list">
+        <li>Bloomberg</li><li>Calypso</li><li>Kondor+</li>
+        <li>Asset Control</li><li>Tableau</li><li>EUREX</li>
+        <li>XETRA</li><li>Excel VBA</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- Languages -->
+<div class="section-wrap" id="languages">
+  <div class="section-label">Languages</div>
+  <h2 class="section-title">Linguistic<br><em>Reach</em></h2>
+  <div class="lang-grid reveal">
+    <div class="lang-item"><div class="lang-name">Bulgarian</div><div class="lang-level">Native</div><div class="lang-dots"><div class="lang-dot filled"></div><div class="lang-dot filled"></div><div class="lang-dot filled"></div><div class="lang-dot filled"></div><div class="lang-dot filled"></div></div></div>
+    <div class="lang-item"><div class="lang-name">English</div><div class="lang-level">Fluent</div><div class="lang-dots"><div class="lang-dot filled"></div><div class="lang-dot filled"></div><div class="lang-dot filled"></div><div class="lang-dot filled"></div><div class="lang-dot filled"></div></div></div>
+    <div class="lang-item"><div class="lang-name">German</div><div class="lang-level">Fluent</div><div class="lang-dots"><div class="lang-dot filled"></div><div class="lang-dot filled"></div><div class="lang-dot filled"></div><div class="lang-dot filled"></div><div class="lang-dot filled"></div></div></div>
+    <div class="lang-item"><div class="lang-name">Russian</div><div class="lang-level">Fluent</div><div class="lang-dots"><div class="lang-dot filled"></div><div class="lang-dot filled"></div><div class="lang-dot filled"></div><div class="lang-dot filled"></div><div class="lang-dot filled"></div></div></div>
+    <div class="lang-item"><div class="lang-name">French</div><div class="lang-level">Fluent</div><div class="lang-dots"><div class="lang-dot filled"></div><div class="lang-dot filled"></div><div class="lang-dot filled"></div><div class="lang-dot filled"></div><div class="lang-dot filled"></div></div></div>
+    <div class="lang-item"><div class="lang-name">Italian</div><div class="lang-level">Proficient</div><div class="lang-dots"><div class="lang-dot filled"></div><div class="lang-dot filled"></div><div class="lang-dot filled"></div><div class="lang-dot filled"></div><div class="lang-dot"></div></div></div>
+    <div class="lang-item"><div class="lang-name">Spanish</div><div class="lang-level">Advanced</div><div class="lang-dots"><div class="lang-dot filled"></div><div class="lang-dot filled"></div><div class="lang-dot filled"></div><div class="lang-dot filled"></div><div class="lang-dot"></div></div></div>
+    <div class="lang-item"><div class="lang-name">Serbian</div><div class="lang-level">Learning</div><div class="lang-dots"><div class="lang-dot filled"></div><div class="lang-dot filled"></div><div class="lang-dot"></div><div class="lang-dot"></div><div class="lang-dot"></div></div></div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- Personal -->
+<div class="section-wrap" id="personal">
+  <div class="section-label">Beyond Finance</div>
+  <h2 class="section-title">Personal<br><em>Pursuits</em></h2>
+  <div class="personal-grid reveal">
+
+    <div class="personal-card">
+      <img src="fencing_competition.png" alt="Épée Fencing Competition" class="personal-card-img">
+      <div class="personal-card-body">
+        <div class="personal-title">🤺 Épée Fencing</div>
+        <div class="personal-desc">Licensed DFB competitor representing Bulgaria. Italian grip specialist preparing for the 2027 veteran debut — beat-and-flèche, froissement, point-in-line.</div>
+      </div>
+    </div>
+
+    <div class="personal-card">
+      <img src="fencing_training.jpg" alt="Fencing Training" class="personal-card-img">
+      <div class="personal-card-body">
+        <div class="personal-title">🏋️ Strength & Conditioning</div>
+        <div class="personal-desc">Serious weightlifting background targeting 84kg competition weight class. Training for athletic performance, power output and competitive edge on the piste.</div>
+      </div>
+    </div>
+
+    <div class="personal-card">
+      <img src="shooting.jpg" alt="Shooting — Modern Pentathlon" class="personal-card-img" style="object-position: center center;">
+      <div class="personal-card-body">
+        <div class="personal-title">🎯 Modern Pentathlon</div>
+        <div class="personal-desc">Competing across the full pentathlon spectrum — fencing, shooting, swimming, riding, and running. The sport of complete athletes.</div>
+      </div>
+    </div>
+
+    <div class="personal-card">
+      <img src="motorcycle.jpg" alt="Honda CBR Motorcycle" class="personal-card-img" style="object-position: center center;">
+      <div class="personal-card-body">
+        <div class="personal-title">🏍️ Motorcycling</div>
+        <div class="personal-desc">Passionate rider. The intersection of mechanical precision, calculated risk, and the kind of focus that translates naturally between the open road and the trading desk.</div>
+      </div>
+    </div>
+
+    <div class="personal-card">
+      <img src="monaco.jpg" alt="Monte Carlo" class="personal-card-img" style="object-position: center center;">
+      <div class="personal-card-body">
+        <div class="personal-title">✈️ International Life</div>
+        <div class="personal-desc">Vienna · Luxembourg · Monaco · Paris · Frankfurt. A career built across European financial capitals. Dubai next on the horizon.</div>
+      </div>
+    </div>
+
+    <div class="personal-card">
+      <div style="height: 200px; background: var(--bg); display: flex; align-items: center; justify-content: center; font-size: 4rem;">📚</div>
+      <div class="personal-card-body">
+        <div class="personal-title">Languages & Literature</div>
+        <div class="personal-desc">Active daily reader and language practitioner across seven languages. Currently acquiring Serbian. Classical literature, history, and the philosophy of mathematics.</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- Location -->
+<div class="location-bar">
+  <div class="location-item"><div class="location-dot"></div>Frankfurt am Main — Grand Tower</div>
+  <div class="location-item" style="color: var(--border);">·</div>
+  <div class="location-item">Previously: Monaco · Paris · Vienna · Luxembourg · Sofia</div>
+</div>
+
+<hr class="divider">
+
+<!-- Contact -->
+<div class="contact-wrap" id="contact" style="padding-top: 7rem;">
+  <div class="section-label" style="justify-content: center;">Contact</div>
+  <h2 class="section-title" style="margin-bottom: 1rem;">Let's<br><em>Connect</em></h2>
+  <p style="color: var(--muted); margin-bottom: 2.5rem; font-size: 1rem;">Open to senior buy-side roles, academic collaborations, and interesting conversations.</p>
+  <a class="contact-email" href="mailto:davidovboyan@gmail.com">davidovboyan@gmail.com</a>
+</div>
+
+<footer>
+  <span>Boyan Davidov · Frankfurt am Main · 2026</span>
+  <span>CFA · FRM · CAIA · CMT · CQF</span>
+</footer>
+
+<script>
+  const reveals = document.querySelectorAll('.reveal, .timeline-item');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) entry.target.classList.add('visible');
+    });
+  }, { threshold: 0.1 });
+  reveals.forEach(el => observer.observe(el));
+
+  document.querySelectorAll('.timeline-item').forEach((item, i) => {
+    item.style.transitionDelay = `${i * 0.08}s`;
+  });
+</script>
+</body>
+</html>
