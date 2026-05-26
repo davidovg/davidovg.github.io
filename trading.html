@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trading Ideas — Boyan Davidov</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --border: #1e1e2e;
+    --gold: #c9a84c;
+    --gold-dim: #8a6f30;
+    --cream: #f0ead6;
+    --muted: #5a5a6e;
+    --text: #d4cfc4;
+    --accent: #4a7fa5;
+    --green: #4a9a6a;
+    --red: #9a4a4a;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Libre Baskerville', serif;
+    font-size: 16px;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 999;
+    opacity: 0.4;
+  }
+
+  /* Nav */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 4rem;
+    background: linear-gradient(to bottom, rgba(10,10,15,0.97), transparent);
+    backdrop-filter: blur(4px);
+    border-bottom: 1px solid rgba(201,168,76,0.1);
+  }
+  .nav-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+    font-weight: 300;
+    letter-spacing: 0.3em;
+    color: var(--gold);
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+  .nav-back {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: color 0.3s;
+  }
+  .nav-back:hover { color: var(--gold); }
+  .nav-back::before { content: '←'; }
+
+  /* Hero */
+  #hero {
+    min-height: 60vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 8rem 4rem 4rem;
+    position: relative;
+    overflow: hidden;
+    border-bottom: 1px solid var(--border);
+  }
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 50% 60% at 90% 20%, rgba(74,154,106,0.06) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 40% at 10% 80%, rgba(201,168,76,0.04) 0%, transparent 60%);
+  }
+  /* Animated chart lines in background */
+  .chart-bg {
+    position: absolute;
+    inset: 0;
+    opacity: 0.06;
+    overflow: hidden;
+  }
+  .chart-bg svg {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+  }
+  .hero-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1.5rem;
+    position: relative;
+    z-index: 1;
+    opacity: 0;
+    animation: fadeUp 0.6s 0.2s forwards;
+  }
+  .hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(3rem, 7vw, 7rem);
+    font-weight: 300;
+    color: var(--cream);
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    position: relative;
+    z-index: 1;
+    opacity: 0;
+    animation: fadeUp 0.6s 0.3s forwards;
+  }
+  .hero-title em { font-style: italic; color: var(--gold); }
+  .hero-subtitle {
+    margin-top: 2rem;
+    font-size: 1rem;
+    color: var(--muted);
+    max-width: 600px;
+    position: relative;
+    z-index: 1;
+    opacity: 0;
+    animation: fadeUp 0.6s 0.5s forwards;
+  }
+  .hero-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 2rem;
+    position: relative;
+    z-index: 1;
+    opacity: 0;
+    animation: fadeUp 0.6s 0.6s forwards;
+  }
+  .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 0.25rem 0.7rem;
+    border: 1px solid var(--border);
+    color: var(--muted);
+  }
+  .tag.active { border-color: var(--gold-dim); color: var(--gold); }
+
+  /* Sections */
+  .wrap { max-width: 1200px; margin: 0 auto; padding: 6rem 4rem; }
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .section-label::after { content: ''; flex: 1; max-width: 80px; height: 1px; background: var(--gold-dim); }
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2rem, 3.5vw, 3.5rem);
+    font-weight: 300;
+    color: var(--cream);
+    line-height: 1.1;
+    margin-bottom: 3rem;
+  }
+  .section-title em { font-style: italic; color: var(--gold); }
+
+  /* Repo card */
+  .repo-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 2.5rem;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s;
+  }
+  .repo-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px; height: 100%;
+    background: var(--gold);
+    transform: scaleY(0);
+    transform-origin: bottom;
+    transition: transform 0.4s;
+  }
+  .repo-card:hover { border-color: var(--gold-dim); }
+  .repo-card:hover::before { transform: scaleY(1); }
+  .repo-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .repo-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1rem;
+    color: var(--gold);
+    letter-spacing: 0.05em;
+  }
+  .repo-lang {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.6rem;
+    border: 1px solid var(--border);
+    color: var(--accent);
+  }
+  .repo-desc { color: var(--text); font-size: 0.95rem; margin-bottom: 1.5rem; }
+  .repo-link {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: color 0.2s;
+  }
+  .repo-link:hover { color: var(--gold); }
+  .repo-link svg { width: 14px; height: 14px; fill: currentColor; }
+
+  /* Strategy cards */
+  .strategy-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+    margin-top: 1rem;
+  }
+  .strategy-card {
+    border: 1px solid var(--border);
+    padding: 2rem;
+    position: relative;
+    transition: border-color 0.3s, transform 0.3s;
+  }
+  .strategy-card:hover { border-color: var(--gold-dim); transform: translateY(-3px); }
+  .strategy-number {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 3rem;
+    font-weight: 300;
+    color: rgba(201,168,76,0.15);
+    line-height: 1;
+    margin-bottom: 0.5rem;
+  }
+  .strategy-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.4rem;
+    color: var(--cream);
+    margin-bottom: 0.5rem;
+  }
+  .strategy-type {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1rem;
+  }
+  .strategy-desc { font-size: 0.88rem; color: var(--muted); }
+
+  /* Code snippet */
+  .code-block {
+    background: #080810;
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--gold);
+    padding: 2rem;
+    margin: 2rem 0;
+    overflow-x: auto;
+  }
+  .code-block pre {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--text);
+    line-height: 1.6;
+    white-space: pre;
+  }
+  .code-comment { color: var(--muted); }
+  .code-keyword { color: #7aa2c9; }
+  .code-string { color: #9aac7a; }
+  .code-number { color: #c9a84c; }
+  .code-function { color: #9a7ac9; }
+
+  /* Performance table */
+  .perf-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    margin-top: 2rem;
+  }
+  .perf-table th {
+    text-align: left;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--gold-dim);
+    color: var(--gold);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 400;
+  }
+  .perf-table td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+  }
+  .perf-table tr:hover td { background: rgba(201,168,76,0.03); }
+  .positive { color: #4a9a6a; }
+  .negative { color: #9a4a4a; }
+
+  /* Papers */
+  .paper-item {
+    border-bottom: 1px solid var(--border);
+    padding: 2rem 0;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 2rem;
+    align-items: start;
+    transition: background 0.2s;
+  }
+  .paper-item:first-child { border-top: 1px solid var(--border); }
+  .paper-year {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    color: var(--gold-dim);
+    text-transform: uppercase;
+    min-width: 60px;
+    margin-top: 0.2rem;
+  }
+  .paper-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.25rem;
+    color: var(--cream);
+    margin-bottom: 0.4rem;
+    line-height: 1.3;
+  }
+  .paper-authors {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+  }
+  .paper-abstract { font-size: 0.88rem; color: var(--muted); }
+  .paper-tags { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.75rem; }
+  .paper-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.5rem;
+    border: 1px solid var(--border);
+    color: var(--muted);
+  }
+
+  /* Disclaimer */
+  .disclaimer {
+    background: rgba(201,168,76,0.04);
+    border: 1px solid var(--gold-dim);
+    padding: 1.5rem 2rem;
+    margin-top: 4rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+  .disclaimer strong { color: var(--gold); }
+
+  /* Footer */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 2rem 4rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  footer span, footer a {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+  }
+  footer a:hover { color: var(--gold); }
+
+  .divider { max-width: 1200px; margin: 0 auto; padding: 0 4rem; border: none; border-top: 1px solid var(--border); }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.7s, transform 0.7s; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 900px) {
+    nav { padding: 1.2rem 2rem; }
+    #hero, .wrap { padding-left: 2rem; padding-right: 2rem; }
+    .strategy-grid { grid-template-columns: 1fr; }
+    .paper-item { grid-template-columns: 1fr; gap: 0.5rem; }
+    footer { padding: 2rem; flex-direction: column; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html">B. Davidov</a>
+  <a class="nav-back" href="index.html">Back to main site</a>
+</nav>
+
+<!-- Hero -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="chart-bg">
+    <svg viewBox="0 0 1200 400" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+      <polyline points="0,300 100,280 200,320 300,200 400,240 500,180 600,220 700,160 800,190 900,140 1000,170 1100,120 1200,150" fill="none" stroke="#c9a84c" stroke-width="2"/>
+      <polyline points="0,350 100,330 200,360 300,290 400,310 500,270 600,300 700,250 800,270 900,220 1000,240 1100,200 1200,210" fill="none" stroke="#4a7fa5" stroke-width="1.5"/>
+    </svg>
+  </div>
+
+  <div class="hero-eyebrow">Quantitative Research · Open Source Code</div>
+  <h1 class="hero-title">Trading<br><em>Ideas</em></h1>
+  <p class="hero-subtitle">A collection of quantitative trading strategies, statistical arbitrage frameworks, and backtesting tools developed across years of research in systematic finance. All code open-source on GitHub.</p>
+  <div class="hero-tags">
+    <span class="tag active">Python</span>
+    <span class="tag active">Statistical Arbitrage</span>
+    <span class="tag active">Pairs Trading</span>
+    <span class="tag active">Machine Learning</span>
+    <span class="tag">HMM Regime Detection</span>
+    <span class="tag">Cointegration</span>
+    <span class="tag">Backtesting</span>
+    <span class="tag">Cryptocurrency</span>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- GitHub Repositories -->
+<div class="wrap" id="repos">
+  <div class="section-label">Open Source</div>
+  <h2 class="section-title">GitHub<br><em>Repositories</em></h2>
+
+  <!-- Trading Ideas — PRIMARY -->
+  <div class="repo-card reveal">
+    <div class="repo-header">
+      <div>
+        <div class="repo-name">📈 davidovg / Trading-Ideas</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--muted);letter-spacing:0.1em;margin-top:0.3rem;">FEATURED REPOSITORY</div>
+      </div>
+      <span class="repo-lang">Python</span>
+    </div>
+    <div class="repo-desc">The primary quantitative trading repository. Implements and backtests different systematic trading ideas — from statistical arbitrage and mean-reversion strategies to momentum and factor-based approaches. All strategies developed with rigorous academic methodology.</div>
+    <a class="repo-link" href="https://github.com/davidovg/Trading-Ideas" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+      View on GitHub →
+    </a>
+  </div>
+
+  <!-- Quantitative Finance -->
+  <div class="repo-card reveal">
+    <div class="repo-header">
+      <div><div class="repo-name">📊 davidovg / Quantitative-Finance</div></div>
+      <span class="repo-lang">Python</span>
+    </div>
+    <div class="repo-desc">Broader quantitative finance projects covering portfolio construction, risk analytics, and financial modelling. Complements the trading strategies with the underlying mathematical and statistical infrastructure.</div>
+    <a class="repo-link" href="https://github.com/davidovg/Quantitative-Finance" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+      View on GitHub →
+    </a>
+  </div>
+
+  <!-- Risk Tools -->
+  <div class="repo-card reveal">
+    <div class="repo-header">
+      <div><div class="repo-name">⚡ davidovg / Risk-Tools</div></div>
+      <span class="repo-lang">Python</span>
+    </div>
+    <div class="repo-desc">Risk management toolset built from years of professional experience across Erste Group, GFG Monaco, and Commerzbank. Covers VaR, CVaR, drawdown analytics, and portfolio stress testing utilities.</div>
+    <a class="repo-link" href="https://github.com/davidovg/Risk-Tools" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+      View on GitHub →
+    </a>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- Live Track Record -->
+<div class="wrap" id="track-record">
+  <div class="section-label">Live Track Record</div>
+  <h2 class="section-title">Verified<br><em>Performance</em></h2>
+  <p style="color:var(--muted);margin-bottom:2.5rem;max-width:640px;">A public, fully transparent investment portfolio on eToro — diversified across ETFs, equities, and FX, with disciplined risk management. All figures independently tracked and verifiable on the platform.</p>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1.5rem;margin-bottom:2.5rem;" class="reveal">
+    <div style="border:1px solid var(--border);padding:1.75rem;border-left:3px solid var(--green);">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:2.5rem;color:var(--green);line-height:1;">+51.9%</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);margin-top:0.5rem;">2-Year Return</div>
+    </div>
+    <div style="border:1px solid var(--border);padding:1.75rem;border-left:3px solid var(--green);">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:2.5rem;color:var(--green);line-height:1;">+31.9%</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);margin-top:0.5rem;">2025 Return</div>
+    </div>
+    <div style="border:1px solid var(--border);padding:1.75rem;border-left:3px solid var(--gold);">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:2.5rem;color:var(--gold);line-height:1;">66.7%</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);margin-top:0.5rem;">Profitable Weeks</div>
+    </div>
+    <div style="border:1px solid var(--border);padding:1.75rem;border-left:3px solid var(--accent);">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:2.5rem;color:var(--accent);line-height:1;">4 / 10</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);margin-top:0.5rem;">Avg Risk Score</div>
+    </div>
+  </div>
+
+  <div style="text-align:center;" class="reveal">
+    <a href="https://www.etoro.com/de/people/davidovboyan" target="_blank" rel="noopener"
+       style="display:inline-flex;align-items:center;gap:0.75rem;font-family:'JetBrains Mono',monospace;font-size:0.68rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--gold);text-decoration:none;padding:0.85rem 1.75rem;border:1px solid var(--gold-dim);transition:background 0.3s;"
+       onmouseover="this.style.background='rgba(201,168,76,0.08)'"
+       onmouseout="this.style.background='transparent'">
+      View Live Portfolio on eToro →
+    </a>
+  </div>
+
+  <div style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;letter-spacing:0.06em;color:var(--muted);margin-top:2rem;text-align:center;line-height:1.6;">
+    Figures as of mid-2026. Past performance is not an indicator of future results. Not investment advice.
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- Strategy Overview -->
+<div class="wrap" id="strategies">
+  <div class="section-label">Core Strategies</div>
+  <h2 class="section-title">Quantitative<br><em>Approaches</em></h2>
+
+  <div class="strategy-grid reveal">
+
+    <div class="strategy-card">
+      <div class="strategy-number">01</div>
+      <div class="strategy-name">Statistical Pairs Trading</div>
+      <div class="strategy-type">Mean Reversion · Cointegration</div>
+      <div class="strategy-desc">Exploits stationary spreads between cointegrated asset pairs. Entry when spread deviates beyond threshold, exit at mean-reversion. Applied to volatility ETFs, crypto, and equity pairs. Tested with ADF, KPSS, and Engle-Granger cointegration tests.</div>
+    </div>
+
+    <div class="strategy-card">
+      <div class="strategy-number">02</div>
+      <div class="strategy-name">Hierarchical ML Pair Trading</div>
+      <div class="strategy-type">CatBoost · HMM · Regime Detection</div>
+      <div class="strategy-desc">Two-layer architecture: bottom model (CatBoost) predicts future spread and generates signals; top model (HMM) filters signals by detecting market regime. Significantly reduces false signals during regime shifts and trending periods. Applied to cryptocurrency market.</div>
+    </div>
+
+    <div class="strategy-card">
+      <div class="strategy-number">03</div>
+      <div class="strategy-name">Regime-Based Allocation</div>
+      <div class="strategy-type">HMM · Multi-Asset · Dynamic</div>
+      <div class="strategy-desc">Hidden Markov Models identify latent market regimes (bull/bear/crisis). Portfolio allocations shift dynamically based on detected regime. Reduces drawdown in crisis periods while maintaining upside exposure in trending regimes.</div>
+    </div>
+
+    <div class="strategy-card">
+      <div class="strategy-number">04</div>
+      <div class="strategy-name">Factor Momentum Strategy</div>
+      <div class="strategy-type">Factor Investing · Multi-Asset · Systematic</div>
+      <div class="strategy-desc">Cross-sectional momentum applied to factor returns rather than individual assets. Long outperforming factors, short underperforming. Diversifies across Value, Momentum, Quality, and Low Volatility factors with systematic rebalancing.</div>
+    </div>
+
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- Code Snippet -->
+<div class="wrap" id="code">
+  <div class="section-label">Sample Code</div>
+  <h2 class="section-title">Cointegration<br><em>Framework</em></h2>
+  <p style="color:var(--muted);margin-bottom:2rem;max-width:600px;">Core logic from the pairs trading strategy — testing for cointegration, fitting the spread, and generating entry/exit signals.</p>
+
+  <div class="code-block reveal">
+    <pre><span class="code-comment"># Pairs Trading Core Framework — Boyan Davidov</span>
+<span class="code-comment"># Statistical arbitrage via cointegration</span>
+
+<span class="code-keyword">import</span> numpy <span class="code-keyword">as</span> np
+<span class="code-keyword">import</span> pandas <span class="code-keyword">as</span> pd
+<span class="code-keyword">from</span> statsmodels.tsa.stattools <span class="code-keyword">import</span> coint, adfuller
+<span class="code-keyword">from</span> statsmodels.regression.linear_model <span class="code-keyword">import</span> OLS
+
+<span class="code-keyword">def</span> <span class="code-function">test_cointegration</span>(s1, s2, significance=<span class="code-number">0.05</span>):
+    <span class="code-string">"""Test pair for cointegration using Engle-Granger."""</span>
+    score, pvalue, _ = coint(s1, s2)
+    <span class="code-keyword">return</span> pvalue < significance, pvalue
+
+<span class="code-keyword">def</span> <span class="code-function">compute_spread</span>(s1, s2):
+    <span class="code-string">"""OLS regression to compute hedge ratio and spread."""</span>
+    model = OLS(s1, s2).fit()
+    hedge_ratio = model.params[<span class="code-number">0</span>]
+    spread = s1 - hedge_ratio * s2
+    <span class="code-keyword">return</span> spread, hedge_ratio
+
+<span class="code-keyword">def</span> <span class="code-function">generate_signals</span>(spread, entry_z=<span class="code-number">2.0</span>, exit_z=<span class="code-number">0.5</span>):
+    <span class="code-string">"""Z-score based entry/exit signal generation."""</span>
+    zscore = (spread - spread.mean()) / spread.std()
+    signals = pd.Series(<span class="code-number">0</span>, index=spread.index)
+    signals[zscore >  entry_z] = -<span class="code-number">1</span>   <span class="code-comment"># Short spread</span>
+    signals[zscore < -entry_z] =  <span class="code-number">1</span>   <span class="code-comment"># Long spread</span>
+    signals[abs(zscore) < exit_z] =  <span class="code-number">0</span>   <span class="code-comment"># Exit</span>
+    <span class="code-keyword">return</span> signals, zscore
+
+<span class="code-keyword">def</span> <span class="code-function">adf_stationarity</span>(spread):
+    <span class="code-string">"""Verify spread stationarity via ADF test."""</span>
+    result = adfuller(spread.dropna())
+    <span class="code-keyword">return</span> {
+        <span class="code-string">'statistic'</span>: result[<span class="code-number">0</span>],
+        <span class="code-string">'p_value'</span>:   result[<span class="code-number">1</span>],
+        <span class="code-string">'stationary'</span>: result[<span class="code-number">1</span>] < <span class="code-number">0.05</span>
+    }</pre>
+  </div>
+
+  <div class="disclaimer reveal">
+    <strong>DISCLAIMER:</strong> All code and research published here is for educational and informational purposes only. Nothing on this page constitutes investment advice or a recommendation to buy or sell any financial instrument. Past performance of any strategy shown does not guarantee future results. The author holds CFA, FRM, CAIA designations — not a licensed investment advisor under BaFin or any other regulatory body in relation to this content.
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- Papers -->
+<div class="wrap" id="papers">
+  <div class="section-label">Academic Work</div>
+  <h2 class="section-title">Research<br><em>Papers</em></h2>
+
+  <div class="reveal">
+    <div class="paper-item">
+      <div class="paper-year">2025</div>
+      <div>
+        <div class="paper-title">Hierarchical Two-Layer Pair Trading Strategy Using Machine Learning</div>
+        <div class="paper-authors">Boyan Davidov · Pavel Biriukov · Christson Hartono</div>
+        <div class="paper-abstract">Proposes a novel hierarchical ML approach to pair trading in the cryptocurrency market. A bottom-layer CatBoost model predicts spread movements and generates signals; a top-layer Hidden Markov Model filters signals via dynamic regime detection. Addresses the problem of regime-induced false signals in mean-reversion strategies.</div>
+        <div class="paper-tags">
+          <span class="paper-tag">Machine Learning</span>
+          <span class="paper-tag">HMM</span>
+          <span class="paper-tag">CatBoost</span>
+          <span class="paper-tag">Cryptocurrency</span>
+          <span class="paper-tag">Statistical Arbitrage</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="paper-item">
+      <div class="paper-year">2023</div>
+      <div>
+        <div class="paper-title">Classifying Physical Activities through Heart Rate Variability Using Holter Monitor Data</div>
+        <div class="paper-authors">Boyan Davidov · Simona Mircheva · Boyan Markov</div>
+        <div class="paper-abstract">Published in Vanguard Scientific Instruments in Management (vol. 19, no. 1, 2023). Applies t-SNE, UMAP dimensionality reduction and ensemble classification to Holter monitor data for human activity recognition. Demonstrates efficacy of ML in health informatics with high precision and F1-scores.</div>
+        <div class="paper-tags">
+          <span class="paper-tag">Published</span>
+          <span class="paper-tag">VSIM Journal</span>
+          <span class="paper-tag">Machine Learning</span>
+          <span class="paper-tag">Health Informatics</span>
+          <span class="paper-tag">UMAP</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="paper-item">
+      <div class="paper-year">2021</div>
+      <div>
+        <div class="paper-title">Long/Short Trading Strategy Design & Backtesting</div>
+        <div class="paper-authors">Boyan Davidov, CFA, CAIA, FRM — CQF Final Project</div>
+        <div class="paper-abstract">CQF programme final project. Implements a cointegration-based pairs trading strategy on volatility ETF/ETN instruments. Covers statistical foundations (autocorrelation, mean-reversion, stationarity), cointegration testing, signal generation, and rigorous backtesting with performance evaluation and a discussion of arbitrage caveats.</div>
+        <div class="paper-tags">
+          <span class="paper-tag">CQF</span>
+          <span class="paper-tag">Cointegration</span>
+          <span class="paper-tag">Backtesting</span>
+          <span class="paper-tag">Volatility ETF</span>
+          <span class="paper-tag">Statistical Arbitrage</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align:center;margin-top:3rem;" class="reveal">
+    <a href="https://www.researchgate.net/profile/Boyan-Davidov" target="_blank" rel="noopener"
+       style="display:inline-flex;align-items:center;gap:0.75rem;font-family:'JetBrains Mono',monospace;font-size:0.68rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);text-decoration:none;padding:0.75rem 1.5rem;border:1px solid var(--border);transition:color 0.3s,border-color 0.3s;"
+       onmouseover="this.style.color='var(--gold)';this.style.borderColor='var(--gold-dim)'"
+       onmouseout="this.style.color='var(--muted)';this.style.borderColor='var(--border)'">
+      Full publication list on ResearchGate →
+    </a>
+  </div>
+</div>
+
+<hr class="divider">
+
+<footer>
+  <a href="index.html">← Back to boyandavidov.com</a>
+  <span>Boyan Davidov · Quantitative Finance · 2026</span>
+  <a href="https://github.com/davidovg" target="_blank">GitHub: davidovg</a>
+</footer>
+
+<script>
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) entry.target.classList.add('visible');
+    });
+  }, { threshold: 0.1 });
+  reveals.forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
